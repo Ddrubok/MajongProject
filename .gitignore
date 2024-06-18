@@ -3,6 +3,7 @@ Temp/
 Obj/
 UnityGenerated/
 Library/
+.vs/
 
 # Visual Studio / MonoDevelop generated
 ExportedObj/
