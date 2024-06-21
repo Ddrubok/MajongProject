@@ -1,31 +1,35 @@
+using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Deck : MonoBehaviour
 {
-    public List<Card> cards = new List<Card>(); // 카드 리스트
+    public List<Card> cards = new List<Card>();
 
     private void Start()
     {
-        InitializeDeck(); // 덱 초기화
+        InitializeDeck();
     }
 
     private void InitializeDeck()
     {
-        // 카드 리스트 초기화
+
         cards.Clear();
 
-        // 카드 생성 및 추가
-        //foreach (var suit in CardSuit.All)
-        //{
-        //    foreach (var rank in CardRank.All)
-        //    {
-        //        cards.Add(new Card(suit));
-        //    }
-        //}
-
+        for (int i = 0; i < (int)Define.KoreanAlphabet.last; i++)
+        {
+            Define.KoreanAlphabet ko = (Define.KoreanAlphabet)i;
+            GameObject _card = Managers.Resource.Instantiate("Card",transform);
+            Card _cd = _card.GetComponent<Card>();
+            _cd.init(ko.ToString());
+            cards.Add(_cd);
+        }
+        transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         ShuffleDeck(); // 덱 셔플
+
+        StartCoroutine(drawCard());
     }
 
     public void ShuffleDeck()
@@ -44,8 +48,6 @@ public class Deck : MonoBehaviour
         {
             InitializeDeck(); // 덱이 비었다면 초기화
         }
-
-        // 맨 위의 카드를 꺼내서 반환
         Card drawnCard = cards[0];
         cards.RemoveAt(0);
         return drawnCard;
@@ -54,5 +56,19 @@ public class Deck : MonoBehaviour
     public void ResetDeck()
     {
         InitializeDeck(); // 덱 초기화
+    }
+
+    IEnumerator drawCard()
+    {
+        while (cards.Count > 0)
+        {
+            yield return new WaitForSeconds(0.1f);
+            Card _cd = DrawCard();
+            _cd.transform.position += Vector3.right * 1.5f;
+            _cd.transform.rotation = Quaternion.Euler(0f, 0.0f, 0f);
+            yield return new WaitForSeconds(1.0f);
+            Managers.Resource.Destroy(_cd.gameObject);
+        }
+       
     }
 }

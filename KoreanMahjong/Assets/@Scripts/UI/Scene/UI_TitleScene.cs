@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static Define;
@@ -30,14 +31,14 @@ public class UI_TitleScene : UI_Scene
 			Managers.Scene.LoadScene(EScene.GameScene);
 		});
 
-		GetObject((int)GameObjects.StartImage).gameObject.SetActive(false);
+		GetObject((int)GameObjects.StartImage).gameObject.SetActive(true);
 		GetText((int)Texts.DisplayText).text = $"";
 
 		StartLoadAssets();
 
 		return true;
     }
-
+	
 	void StartLoadAssets()
 	{
 		Managers.Resource.LoadAllAsync<Object>("PreLoad", (key, count, totalCount) =>

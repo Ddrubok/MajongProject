@@ -6,12 +6,56 @@ public static class Define
 {
 	public enum EScene
 	{
-		Unknown,
 		TitleScene,
 		GameScene,
-	}
+        Unknown,
+    }
 
-	public enum EUIEvent
+    public enum KoreanAlphabet
+    {
+        ぁ,
+        あ,
+        い,
+        ぇ,
+        え,
+        ぉ,
+        け,
+        げ,
+        こ,
+        さ,
+        ざ,
+        し,
+        じ,
+        す,
+        ず,
+        せ,
+        ぜ,
+        そ,
+        ぞ,
+        た,
+        だ,
+        ち,
+        ぢ,
+        っ,
+        つ,
+        づ,
+        て,
+        で,
+        と,
+        ど,
+        な,
+        に,
+        ぬ,
+        ね,
+        の,
+        は,
+        ば,
+        ぱ,
+        ひ,
+        び,
+        last,
+    }
+    public enum EUIEvent
 	{
 		Click,
 		PointerDown,
