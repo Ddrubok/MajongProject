@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+public class CardInfo
+{
+    public string _shape;
+}
+
+
 public class Card : MonoBehaviour
 {
     SpriteRenderer _spriteRenderer;
