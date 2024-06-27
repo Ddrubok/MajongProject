@@ -30,16 +30,16 @@ public class ServerManager : MonoBehaviour
     // 게임 플레이 관련 메서드들...
     public async Task DrawTile()
     {
-        await gameClient.DrawTile();
+        //await gameClient.DrawTile();
     }
 
     public async Task DiscardTile(string tile)
     {
-        await gameClient.DiscardTile(tile);
+       // await gameClient.DiscardTile(tile);
     }
 
     public async Task CompleteWord(string word)
     {
-        await gameClient.CompleteWord(word);
+       // await gameClient.CompleteWord(word);
     }
 }

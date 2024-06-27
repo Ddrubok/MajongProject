@@ -28,11 +28,18 @@ namespace GameServer
         }
     }
 
-public class GameServer
+    public class GameRoom
+    {
+        public string RoomId { get; set; }
+        public TcpClient Owner { get; set; }
+        public List<TcpClient> Players { get; set; } = new List<TcpClient>();
+        public GameState GameState { get; set; } = new GameState();
+    }
+
+    public class GameServer
     {
         private TcpListener tcpListener;
-        private List<TcpClient> clients = new List<TcpClient>();
-        private GameState gameState;
+        private Dictionary<string, GameRoom> gameRooms = new Dictionary<string, GameRoom>();
 
         public async Task StartServer(int port)
         {
@@ -43,7 +50,6 @@ public class GameServer
             while (true)
             {
                 TcpClient client = await tcpListener.AcceptTcpClientAsync();
-                clients.Add(client);
                 _ = HandleClientAsync(client);
             }
         }
@@ -54,7 +60,6 @@ public class GameServer
             {
                 using (NetworkStream stream = client.GetStream())
                 {
-                    // 환영 메시지 전송
                     await SendWelcomeMessage(stream);
 
                     byte[] buffer = new byte[1024];
@@ -74,7 +79,7 @@ public class GameServer
             }
             finally
             {
-                clients.Remove(client);
+                RemoveClientFromRooms(client);
                 client.Close();
             }
         }
@@ -85,6 +90,12 @@ public class GameServer
 
             switch (gameMessage.Type)
             {
+                case "CreateRoom":
+                    await CreateRoom(sender);
+                    break;
+                case "JoinRoom":
+                    await JoinRoom(sender, gameMessage.Data.ToString());
+                    break;
                 case "DrawTile":
                     // 타일 드로우 로직
                     break;
@@ -94,31 +105,85 @@ public class GameServer
                 case "CompleteWord":
                     // 단어 완성 확인 및 점수 계산 로직
                     break;
-                    // 기타 필요한 메시지 타입들...
+                    // 기타 메시지 처리...
             }
-
-            // 게임 상태 업데이트 및 모든 클라이언트에게 전송
-            await BroadcastGameStateAsync();
         }
 
-        private async Task BroadcastGameStateAsync()
+        private async Task CreateRoom(TcpClient owner)
         {
-            string stateJson = JsonConvert.SerializeObject(gameState);
-            byte[] stateBuffer = Encoding.UTF8.GetBytes(stateJson);
+            string roomId = Guid.NewGuid().ToString();
+            GameRoom newRoom = new GameRoom { RoomId = roomId, Owner = owner };
+            newRoom.Players.Add(owner);
+            gameRooms[roomId] = newRoom;
 
-            foreach (TcpClient client in clients)
+            await SendMessageToClient(owner, new GameMessage { Type = "RoomCreated", Data = roomId });
+        }
+
+        private async Task JoinRoom(TcpClient player, string roomId)
+        {
+            if (gameRooms.TryGetValue(roomId, out GameRoom room))
             {
-                NetworkStream stream = client.GetStream();
-                await stream.WriteAsync(stateBuffer, 0, stateBuffer.Length);
+                if (room.Players.Count < 4)
+                {
+                    room.Players.Add(player);
+                    await SendMessageToClient(player, new GameMessage { Type = "JoinedRoom", Data = roomId });
+                    await BroadcastToRoom(room, new GameMessage { Type = "PlayerJoined", Data = room.Players.Count });
+
+                    if (room.Players.Count == 4)
+                    {
+                        await StartGame(room);
+                    }
+                }
+                else
+                {
+                    await SendMessageToClient(player, new GameMessage { Type = "RoomFull" });
+                }
+            }
+            else
+            {
+                await SendMessageToClient(player, new GameMessage { Type = "RoomNotFound" });
             }
         }
 
-        private async Task SendWelcomeMessage(NetworkStream stream)
+        private async Task StartGame(GameRoom room)
+        {
+            // 게임 시작 로직 구현
+            await BroadcastToRoom(room, new GameMessage { Type = "GameStarted" });
+        }
+
+        private async Task SendMessageToClient(TcpClient client, GameMessage message)
+        {
+            string json = JsonConvert.SerializeObject(message);
+            byte[] messageBytes = Encoding.UTF8.GetBytes(json);
+            await client.GetStream().WriteAsync(messageBytes, 0, messageBytes.Length);
+        }
+
+        private async Task BroadcastToRoom(GameRoom room, GameMessage message)
+        {
+            foreach (var player in room.Players)
+            {
+                await SendMessageToClient(player, message);
+            }
+        }
+
+        private void RemoveClientFromRooms(TcpClient client)
+        {
+            foreach (var room in gameRooms.Values)
+            {
+                room.Players.Remove(client);
+                if (room.Owner == client)
+                {
+                    // 방장이 나갔을 때의 처리 (예: 방 삭제 또는 새 방장 지정)
+                }
+            }
+        }
+
+        private async Task SendWelcomeMessage(NetworkStream stream )
         {
             GameMessage welcomeMessage = new GameMessage
             {
-                Type = "Welcome",
-                Data = "환영합니다! 한국어 알파벳 마작 게임 서버에 연결되었습니다."
+                Type = "RoomCreated",
+                Data = stream.DataAvailable
             };
 
             string json = JsonConvert.SerializeObject(welcomeMessage);

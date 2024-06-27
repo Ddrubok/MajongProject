@@ -1,9 +1,10 @@
-using UnityEngine;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System.Collections.Generic;
+using UnityEngine;
+
 public class GameMessage
 {
     public string Type { get; set; }
@@ -15,7 +16,6 @@ public class GameState
     public List<PlayerState> Players { get; set; }
     public List<string> DrawPile { get; set; }
     public int CurrentPlayerIndex { get; set; }
-    // 기타 필요한 게임 상태 정보...
 }
 
 public class PlayerState
@@ -28,7 +28,7 @@ public class GameClient : MonoBehaviour
 {
     private TcpClient tcpClient;
     private NetworkStream stream;
-    private GameState gameState;
+    private string currentRoomId;
 
     public async Task ConnectToServer(string ip, int port)
     {
@@ -36,7 +36,6 @@ public class GameClient : MonoBehaviour
         await tcpClient.ConnectAsync(ip, port);
         stream = tcpClient.GetStream();
         Debug.Log("Connected to server");
-
         _ = ReceiveMessagesAsync();
     }
 
@@ -47,61 +46,55 @@ public class GameClient : MonoBehaviour
         {
             int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
             if (bytesRead == 0) break;
-
             string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
             ProcessServerMessage(message);
         }
     }
 
-    //private void ProcessServerMessage(string message)
-    //{
-    //    gameState = JsonConvert.DeserializeObject<GameState>(message);
-    //    UpdateGameUI();
-    //}
     private void ProcessServerMessage(string message)
     {
         GameMessage gameMessage = JsonConvert.DeserializeObject<GameMessage>(message);
 
         switch (gameMessage.Type)
         {
-            case "Welcome":
-                Debug.Log(gameMessage.Data as string);
-                // 필요하다면 여기에 추가 로직 구현 (예: UI에 환영 메시지 표시)
+            case "RoomCreated":
+                currentRoomId = gameMessage.Data.ToString();
+                Debug.Log($"Room created with ID: {currentRoomId}");
                 break;
-            case "GameState":
-                gameState = JsonConvert.DeserializeObject<GameState>(gameMessage.Data.ToString());
-                UpdateGameUI();
+            case "JoinedRoom":
+                currentRoomId = gameMessage.Data.ToString();
+                Debug.Log($"Joined room with ID: {currentRoomId}");
                 break;
-                // 다른 메시지 타입들 처리...
+            case "PlayerJoined":
+                int playerCount = (int)gameMessage.Data;
+                Debug.Log($"Player joined. Total players: {playerCount}");
+                break;
+            case "GameStarted":
+                Debug.Log("Game started!");
+                break;
+            case "RoomFull":
+                Debug.Log("Room is full");
+                break;
+            case "RoomNotFound":
+                Debug.Log("Room not found");
+                break;
         }
     }
-    private void UpdateGameUI()
+
+    public async Task CreateRoom()
     {
-        // 게임 UI 업데이트 로직
+        await SendMessageToServer(new GameMessage { Type = "CreateRoom" });
     }
 
-    public async Task SendMessageToServer(GameMessage message)
+    public async Task JoinRoom(string roomId)
+    {
+        await SendMessageToServer(new GameMessage { Type = "JoinRoom", Data = roomId });
+    }
+
+    private async Task SendMessageToServer(GameMessage message)
     {
         string json = JsonConvert.SerializeObject(message);
         byte[] buffer = Encoding.UTF8.GetBytes(json);
         await stream.WriteAsync(buffer, 0, buffer.Length);
     }
-
-    // 게임 액션 메서드들
-    public async Task DrawTile()
-    {
-        await SendMessageToServer(new GameMessage { Type = "DrawTile" });
-    }
-
-    public async Task DiscardTile(string tile)
-    {
-        await SendMessageToServer(new GameMessage { Type = "DiscardTile", Data = tile });
-    }
-
-    public async Task CompleteWord(string word)
-    {
-        await SendMessageToServer(new GameMessage { Type = "CompleteWord", Data = word });
-    }
-
-    // 기타 필요한 게임 액션 메서드들...
 }
