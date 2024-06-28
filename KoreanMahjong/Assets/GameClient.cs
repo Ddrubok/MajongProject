@@ -86,6 +86,10 @@ public class GameClient : MonoBehaviour
         await SendMessageToServer(new GameMessage { Type = "CreateRoom" });
     }
 
+    public void CreateRoomButton()
+    {
+        CreateRoom();
+    }
     public async Task JoinRoom(string roomId)
     {
         await SendMessageToServer(new GameMessage { Type = "JoinRoom", Data = roomId });

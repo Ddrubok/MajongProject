@@ -182,8 +182,8 @@ namespace GameServer
         {
             GameMessage welcomeMessage = new GameMessage
             {
-                Type = "RoomCreated",
-                Data = stream.DataAvailable
+                Type = "Welcome",
+                Data = "환영합니다! 한국어 알파벳 마작 게임 서버에 연결되었습니다."
             };
 
             string json = JsonConvert.SerializeObject(welcomeMessage);
