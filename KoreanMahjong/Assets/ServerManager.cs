@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 public class ServerManager : MonoBehaviour
 {
     public GameClient gameClient;
+    PlayerState _playerState = new PlayerState();
     public string serverIP = "localhost"; // 서버 IP 주소
     public int serverPort = 8888; // 서버 포트 번호
 
@@ -18,6 +19,8 @@ public class ServerManager : MonoBehaviour
         {
             await gameClient.ConnectToServer(serverIP, serverPort);
             Debug.Log("서버에 연결되었습니다.");
+            _playerState.Id = "Doobok";
+            gameClient.PlayerInfo(_playerState);
             // 연결 성공 후 추가 로직
         }
         catch (System.Exception e)

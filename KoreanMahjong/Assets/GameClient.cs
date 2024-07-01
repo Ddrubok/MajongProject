@@ -20,8 +20,8 @@ public class GameState
 
 public class PlayerState
 {
-    public int Id { get; set; }
-    public List<string> Hand { get; set; }
+    public string Id { get; set; }
+    public List<int> Hand { get; set; }
     public int Score { get; set; }
 }
 public class GameClient : MonoBehaviour
@@ -89,6 +89,11 @@ public class GameClient : MonoBehaviour
     public void CreateRoomButton()
     {
         CreateRoom();
+    }
+
+    public async Task PlayerInfo(PlayerState ps)
+    {
+        await SendMessageToServer(new GameMessage { Type = "PlayerInfo",Data = ps.Id });
     }
     public async Task JoinRoom(string roomId)
     {
