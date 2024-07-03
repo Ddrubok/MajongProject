@@ -6,6 +6,8 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.TextCore.Text;
 using TextAsset = UnityEngine.TextAsset;
 using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine.UIElements;
+using Button = UnityEngine.UI.Button;
 
 public class FlashcardManager : MonoBehaviour
 {
@@ -33,15 +35,23 @@ public class FlashcardManager : MonoBehaviour
     {
         //InitializeFlashcards();
         LoadCharactersFromCSV();
-
-
         nextButton.onClick.AddListener(ShowNextCard);
         prevButton.onClick.AddListener(ShowPrevCard);
         flipButton.onClick.AddListener(FlipCard);
         shuffleButton.onClick.AddListener(ShuffleDeck);
-
     }
 
+    float timer = 0.0f;
+    float waitingTime = 2.0f;
+    private void Update()
+    {
+        timer += Time.deltaTime;
+
+        if (timer > waitingTime)
+        {
+            flipButton.gameObject.SetActive(true);
+        }
+    }
     async void LoadCharactersFromCSV()
     {
         // Load the CSV file using Addressables
@@ -254,6 +264,24 @@ public class FlashcardManager : MonoBehaviour
         flashcards.Add(new JapaneseCharacter { character = "ウォ", romanization = "wo", type = "katakana" });
     }
 
+    void showCard()
+    {
+        timer = 0.0f;
+        flipButton.gameObject.SetActive(false);
+        Debug.Log(currentIndex + "     " + flashcards[currentIndex].character);
+        characterText.text = flashcards[currentIndex].character;
+        romanizationText.text = "";
+        isShowingRomanization = false;
+    }
+    void ShowPrevCard()
+    {
+        if (currentIndex <= 0)
+            currentIndex = flashcards.Count - 1;
+        else
+            currentIndex--;
+
+        showCard();
+    }
     void ShowNextCard()
     {
         if (currentIndex == flashcards.Count-1)
@@ -261,19 +289,13 @@ public class FlashcardManager : MonoBehaviour
             currentIndex = -1; // 카드 세트를 다시 시작
         }
         currentIndex++;
-        Debug.Log(currentIndex + ' ' + flashcards[currentIndex].character);
-        characterText.text = flashcards[currentIndex].character;
-        romanizationText.text = "";
-        isShowingRomanization = false; 
+        showCard();
     }
 
     void ReStartShowNextCard()
     {
         currentIndex = 0;
-        Debug.Log(currentIndex + ' ' + flashcards[currentIndex].character);
-        characterText.text = flashcards[currentIndex].character;
-        romanizationText.text = "";
-        isShowingRomanization = false;
+        showCard();
     }
 
     void FlipCard()
@@ -281,9 +303,11 @@ public class FlashcardManager : MonoBehaviour
         if (isShowingRomanization)
         {
             romanizationText.text = "";
+            characterText.text = flashcards[currentIndex].character;
         }
         else
         {
+            characterText.text = "";
             romanizationText.text = flashcards[currentIndex].romanization;
         }
         isShowingRomanization = !isShowingRomanization;
@@ -301,16 +325,5 @@ public class FlashcardManager : MonoBehaviour
         ReStartShowNextCard();
     }
 
-    void ShowPrevCard()
-    {
-        if (currentIndex <= 0)
-            currentIndex = flashcards.Count-1;
-        else
-             currentIndex--;
-
-        Debug.Log(currentIndex + "     " + flashcards[currentIndex].character);
-        characterText.text = flashcards[currentIndex].character;
-        romanizationText.text = "";
-        isShowingRomanization = false;
-    }
+   
 }
