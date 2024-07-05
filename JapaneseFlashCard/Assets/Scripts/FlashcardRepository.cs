@@ -10,6 +10,7 @@ public class JapaneseCharacter
     public string character;
     public string romanization;
     public string type;
+    public int correctCount;
 
 }
 public class FlashcardRepository

@@ -31,6 +31,10 @@ MonoBehaviour:
     m_Key: Suffle
     m_Metadata:
       m_Items: []
+  - m_Id: 1059538015100928
+    m_Key: Enter text...
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

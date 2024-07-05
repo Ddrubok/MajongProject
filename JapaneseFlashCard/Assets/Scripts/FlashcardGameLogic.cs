@@ -46,7 +46,7 @@ public class FlashcardGameLogic
 
     public void CheckInput(string input)
     {
-        if (input == repository.Flashcards[currentIndex].romanization)
+        if (input == repository.Flashcards[currentIndex].romanization||input== repository.Flashcards[currentIndex].romanization.ToUpper())
         {
             FlashcardManager.Input.InputField.text = "";
             ShowNextCard();
