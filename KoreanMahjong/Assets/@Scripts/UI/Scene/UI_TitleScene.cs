@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using WebPacket;
 using static Define;
 
 public class UI_TitleScene : UI_Scene
@@ -25,33 +26,51 @@ public class UI_TitleScene : UI_Scene
         BindObjects(typeof(GameObjects));
         BindTexts(typeof(Texts));
 
-		GetObject((int)GameObjects.StartImage).BindEvent((evt) =>
-		{
-			Debug.Log("ChangeScene");
-			Managers.Scene.LoadScene(EScene.GameScene);
-		});
+        GetObject((int)GameObjects.StartImage).BindEvent((evt) =>
+        {
+            Debug.Log("ChangeScene");
+            Managers.Scene.LoadScene(EScene.GameScene);
+        });
 
-		GetObject((int)GameObjects.StartImage).gameObject.SetActive(true);
-		GetText((int)Texts.DisplayText).text = $"";
+        GetObject((int)GameObjects.StartImage).gameObject.SetActive(true);
+        GetText((int)Texts.DisplayText).text = $"";
 
-		StartLoadAssets();
+        StartLoadAssets();
 
-		return true;
+        return true;
     }
-	
-	void StartLoadAssets()
-	{
-		Managers.Resource.LoadAllAsync<Object>("PreLoad", (key, count, totalCount) =>
-		{
-			Debug.Log($"{key} {count}/{totalCount}");
 
-			if (count == totalCount)
-			{
-				Managers.Data.Init();
+    void StartLoadAssets()
+    {
+        Managers.Resource.LoadAllAsync<Object>("PreLoad", (key, count, totalCount) =>
+        {
+            Debug.Log($"{key} {count}/{totalCount}");
 
-				GetObject((int)GameObjects.StartImage).gameObject.SetActive(true);
-				GetText((int)Texts.DisplayText).text = "Touch To Start";
-			}
-		});
-	}
+            if (count == totalCount)
+            {
+                Managers.Data.Init();
+
+               
+
+                GetObject((int)GameObjects.StartImage).gameObject.SetActive(true);
+                GetText((int)Texts.DisplayText).text = "Touch To Start";
+
+                TestPacketReq req = new TestPacketReq()
+                {
+                    userId = "Doobok",
+                    token = "1234"
+                };
+                Managers.Web.SendPostRequest<TestPacketRes>("test/hello", req, (result) =>
+                {
+                    if (result == null)
+                    {
+                        Debug.Log("Web Response NULL");
+                        return;
+                    }
+
+                    Debug.Log($"Web Response : {result.success}");
+                });
+            }
+        });
+    }
 }

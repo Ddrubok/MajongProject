@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 
@@ -58,4 +59,26 @@ public static class Util
 	{
 		return (T)Enum.Parse(typeof(T), value, true);
 	}
+
+	public static IPAddress GetIpv4Address(string hostAddress)
+	{
+		IPAddress[] ipAddr = Dns.GetHostAddresses(hostAddress);
+
+		if(ipAddr.Length == 0)
+		{
+			Debug.LogError("AuthServer DNS Failed");
+			return null;
+		}
+
+		foreach(IPAddress ip in ipAddr)
+		{
+			if(ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+			{
+				return ip;
+			}
+		}
+
+        Debug.LogError("AuthServer IPv4 Failed");
+        return null;
+    }
 }
