@@ -15,6 +15,7 @@ public class Managers : MonoBehaviour
     private SoundManager _sound = new SoundManager();
     private UIManager _ui = new UIManager();
     private WebManager _web = new WebManager();
+    private AuthManager _auth = new AuthManager();
 
     public static DataManager Data { get { return Instance?._data; } }
     public static PoolManager Pool { get { return Instance?._pool; } }
@@ -24,6 +25,8 @@ public class Managers : MonoBehaviour
     public static UIManager UI { get { return Instance?._ui; } }
 
     public static WebManager Web { get { return Instance?._web; } }
+
+    public static AuthManager Auth { get { return Instance?._auth; } }
     #endregion
 
 
