@@ -13,20 +13,26 @@ public class AuthResult
     public string token;
 
 }
-public class AuthManager 
+public class AuthManager
 {
-    const string FACEBOOK_APPID = "1704421393654273";
+    const string FACEBOOK_APPID = "1704421393654273|14249b1eeecf44138c5b89e22461b60e";
     Action<AuthResult> _onLoginSucess;
 
     #region Facebook
 
+    public void Logout()
+    {
+        Debug.Log("Facebook Logout");
+        FB.LogOut();
+    }
     public void TryFacebookLogin(Action<AuthResult> onLoginSucess)
     {
         _onLoginSucess = onLoginSucess;
 
-        if(FB.IsInitialized == false)
+        if (FB.IsInitialized == false)
         {
-            FB.Init(FACEBOOK_APPID, onInitComplete: OnFacebookInitComplete);
+            
+            FB.Init( onInitComplete: OnFacebookInitComplete);
             return;
         }
 
@@ -48,8 +54,8 @@ public class AuthManager
     {
         Debug.Log("FacebookLogin");
 
-        List<string> permissions = new List<string>() { "public_profile ", "email" };
-        FB.LogInWithReadPermissions(permissions,FacebookAuthCallback);
+        List<string> permissions = new List<string>() { "gaming_profile", "email" };
+        FB.LogInWithReadPermissions(permissions, FacebookAuthCallback);
     }
     void FacebookAuthCallback(ILoginResult loginResult)
     {
@@ -68,7 +74,7 @@ public class AuthManager
         }
         else
         {
-            if(loginResult.Error != null)
+            if (loginResult.Error != null)
             {
                 Debug.Log($"FacebookAuthCallback Failed (ErrorCode: {loginResult.Error})");
             }
@@ -88,7 +94,7 @@ public class AuthManager
         AuthResult authResult = new AuthResult()
         {
             providerType = EProviderType.Guest,
-            uniqueId =SystemInfo.deviceUniqueIdentifier,
+            uniqueId = SystemInfo.deviceUniqueIdentifier,
             token = "",
         };
 
