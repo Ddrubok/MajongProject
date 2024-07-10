@@ -48,7 +48,7 @@ public class AuthManager
     {
         Debug.Log("FacebookLogin");
 
-        List<string> permissions = new List<string>() { "gaming_profile", "email" };
+        List<string> permissions = new List<string>() { "public_profile ", "email" };
         FB.LogInWithReadPermissions(permissions,FacebookAuthCallback);
     }
     void FacebookAuthCallback(ILoginResult loginResult)
