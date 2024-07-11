@@ -2,9 +2,11 @@ using Facebook.Unity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using static Define;
+using static UnityEngine.Application;
 
 public class AuthResult
 {
@@ -31,8 +33,8 @@ public class AuthManager
 
         if (FB.IsInitialized == false)
         {
-            
-            FB.Init( onInitComplete: OnFacebookInitComplete);
+
+            FB.Init(onInitComplete: OnFacebookInitComplete);
             return;
         }
 
@@ -53,15 +55,18 @@ public class AuthManager
     void FacebookLogin()
     {
         Debug.Log("FacebookLogin");
-
+        // List<string> permissions = new List<string>() { "gaming_profile", "email" };
         List<string> permissions = new List<string>() { "gaming_profile", "email" };
         FB.LogInWithReadPermissions(permissions, FacebookAuthCallback);
+
+       
+       //FB.LogInWithPublishPermissions(permissions, FacebookAuthCallback);
     }
     void FacebookAuthCallback(ILoginResult loginResult)
     {
         if (FB.IsLoggedIn)
         {
-            AccessToken token = Facebook.Unity.AccessToken.CurrentAccessToken;
+            AccessToken token = AccessToken.CurrentAccessToken;
 
             AuthResult authResult = new AuthResult()
             {
