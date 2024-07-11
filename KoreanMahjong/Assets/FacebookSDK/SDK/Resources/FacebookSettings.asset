@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedAppIndex: 0
   clientTokens:
-  - 14249b1eeecf44138c5b89e22461b60e
+  - 
   appIds:
   - 1704421393654273
   appLabels:
@@ -24,7 +24,7 @@ MonoBehaviour:
   status: 1
   xfbml: 1
   frictionlessRequests: 1
-  androidKeystorePath: 
+  androidKeystorePath: C:/Users/DooBokWie/.android/debug.keystore
   iosURLSuffix: 
   appLinkSchemes:
   - list: []
