@@ -9,7 +9,7 @@ namespace AccountServer.Services
     {
         HttpClient _httpClient;
 
-        readonly string _accessToken = "EAAYOKYe3YgEBOxIdrgAHMx1OhaUeqjZC35sHC27gJYZCAQWMhHZChuHGLf9A1k0SUIuAqpISeA2I6f6KMU2ZAPvcZCgaiOvgcHFKaKoh9muiQqCbv7XDeKqqL8sRKZBlRqPKXcOXXtv477smrEu5XFOZBP2ISCRLwlP8VZCLPU6Afqp4SEiC3nSZBRICsTJ2vqCL0CZAIbQYZCzpB1Rk5soUwLZBoqZASPZA7mK8thiPUSHSdbtJsPjcqaiSnYxn2h0lm7qwZDZD"; // 바꿔
+        readonly string _accessToken = "1704421393654273|QxsjTiR8h-6_pNkIpn9_JhFTgTE"; // 바꿔
 
         public FacebookService()
         {
