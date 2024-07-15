@@ -59,7 +59,19 @@ public class UI_LoginScene : UI_Scene
         }
         Managers.Web.SendPostRequest<LoginAccountPacketRes>($"api/account/login/{url}", req, (res) =>
         {
-            //TODO
+            if (res.success)
+            {
+                Debug.Log("LoinSuccess");
+                Debug.Log($"AccountDbId: {res.accountDbId}");
+                Debug.Log($"JWT: {res.jwt}");
+
+                Debug.Log("Try to Connect to GameServer");
+            }
+            else
+            {
+                Debug.Log("Login Failed");
+            }
+               
         });
     }
 }

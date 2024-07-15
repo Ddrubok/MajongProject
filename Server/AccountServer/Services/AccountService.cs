@@ -8,10 +8,12 @@ namespace AccountServer.Services
         AccountDbContext _dbContext;
 
         FacebookService _facebookService;
-        public AccountService(AccountDbContext context,FacebookService facebook) 
+        JwtTokenService _jwt;
+        public AccountService(AccountDbContext context,FacebookService facebook,JwtTokenService jwt) 
         {
             _dbContext = context;   
             _facebookService = facebook;
+            _jwt = jwt;
         }
 
         public async Task<LoginAccountPacketRes> LoginFacebookAccount(string token)
@@ -39,6 +41,7 @@ namespace AccountServer.Services
 
             res.success = true;
             res.accountDbId = accountDb.AccountDbId;
+            res.jwt = _jwt.CreateJwtAccessToken(accountDb.AccountDbId);
 
             return res;
         }

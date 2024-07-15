@@ -19,6 +19,7 @@ namespace AccountServer
 
             builder.Services.AddDbContext<AccountDbContext>();
             builder.Services.AddSingleton<FacebookService>();
+            builder.Services.AddSingleton<JwtTokenService>();
             builder.Services.AddScoped<AccountService>();
 
             var app = builder.Build();
