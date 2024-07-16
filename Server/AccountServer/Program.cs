@@ -21,6 +21,7 @@ namespace AccountServer
             builder.Services.AddSingleton<FacebookService>();
             builder.Services.AddSingleton<JwtTokenService>();
             builder.Services.AddScoped<AccountService>();
+            builder.Services.AddScoped<RankingService>();
 
             var app = builder.Build();
 

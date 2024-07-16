@@ -16,5 +16,16 @@ namespace AccountDB
         public int AccountDbId { get; set; } //PK
         public string LoginProviderUserId { get; set; } = string.Empty;
         public ProviderType LoginProviderType { get; set; }
+        public string Username { get; set; } = string.Empty;
+    }
+
+   
+
+    [Table("Ranking")]
+    public class RankingDb
+    {
+        public int RankingDbId { get; set;}
+        public string Username { get; set; } = string.Empty;   
+        public int Score { get; set; }
     }
 }

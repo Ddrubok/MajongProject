@@ -16,7 +16,7 @@ public class UI_LoginScene : UI_Scene
 
     public override bool Init()
     {
-        if(base.Init()==false)
+        if (base.Init() == false)
         {
             return false;
         }
@@ -30,7 +30,7 @@ public class UI_LoginScene : UI_Scene
 
     public void OnClickFacebookButton(PointerEventData eventData)
     {
-        Managers.Auth.TryFacebookLogin((result)=> OnLoginSucess(result,EProviderType.Facebook));
+        Managers.Auth.TryFacebookLogin((result) => OnLoginSucess(result, EProviderType.Facebook));
     }
 
     public void OnLoginSucess(AuthResult authResult, EProviderType providerType)
@@ -43,7 +43,7 @@ public class UI_LoginScene : UI_Scene
 
         string url = "";
 
-        switch (providerType) 
+        switch (providerType)
         {
             case EProviderType.Guest:
                 url = "guest";
@@ -54,7 +54,7 @@ public class UI_LoginScene : UI_Scene
             case EProviderType.Google:
                 url = "google";
                 break;
-        default:
+            default:
                 return;
         }
         Managers.Web.SendPostRequest<LoginAccountPacketRes>($"api/account/login/{url}", req, (res) =>
@@ -65,13 +65,35 @@ public class UI_LoginScene : UI_Scene
                 Debug.Log($"AccountDbId: {res.accountDbId}");
                 Debug.Log($"JWT: {res.jwt}");
 
-                Debug.Log("Try to Connect to GameServer");
+                Managers.Jwt = res.jwt;
+                UpdateRank();
             }
             else
             {
                 Debug.Log("Login Failed");
             }
-               
+
+        });
+    }
+
+    void UpdateRank()
+    {
+        UpdateRankingPacketReq req = new UpdateRankingPacketReq()
+        {
+            jwt = Managers.Jwt,
+            score = 100
+        };
+        Managers.Web.SendPostRequest<UpdateRankingPacketRes>("api/ranking/update", req, (res) =>
+        {
+            if(res.success) 
+            {
+                Debug.Log("UpdateRanking Success");
+            }
+            else
+            {
+                Debug.Log("UpdateRanking Failed");
+            }
+
         });
     }
 }

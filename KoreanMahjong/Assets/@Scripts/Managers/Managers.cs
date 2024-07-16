@@ -7,6 +7,8 @@ public class Managers : MonoBehaviour
     private static Managers s_instance;
     public static Managers Instance { get { Init(); return s_instance; } }
 
+    public static string Jwt { get; set; }
+
     #region Core
     private DataManager _data = new DataManager();
     private PoolManager _pool = new PoolManager();
